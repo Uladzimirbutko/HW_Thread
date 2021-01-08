@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace Garden
 {
@@ -18,13 +17,12 @@ namespace Garden
                     }
                     else if (garden[i,j] == 3)
                     {
-                        Console.Write("T");
-                        
+                        Console.WriteLine("T1 - WOOD");
+
                     }
                     else if (garden[i, j] == 2)
                     {
-                        Console.Write("#");
-                        
+                        //Console.WriteLine("T1 - The gardeners collided.");
                     }
                 }
             }

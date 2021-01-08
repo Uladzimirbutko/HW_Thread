@@ -6,12 +6,34 @@ namespace Garden
 {
     class Program
     {
-        static object locker = new object();
+        static readonly object locker = new object();
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 
-            GardenPlan.Wood();
+            var a =  await PrintMatrixAsync("A"); // ждем
+
+            var b =  await PrintMatrixAsync("B");//ждем
+
+            Console.WriteLine("Перемножение матрицы может занять некоторое время. Рекомендуется пока посмотреть на работу садовников.");
+            Console.WriteLine($"Нажмите \"Y\", если хотите сразу посмотреть результат уможения матрицы или любую клавишу, что бы посмотреть сначала работу садовников");
+
+            var str = Console.ReadLine().ToUpper();
+
+            var task = MatrixMultiplicationAsync(a, b); //не ждем. умножается паралельно.
+
+            if (str == "Y")
+            {
+                Console.WriteLine("Матрицы умножаются. Подождите завершения.");
+                ulong[,] resultY = await task; //ждем завершения 
+                Console.WriteLine("Матрицы умножены. Нажмите любую клавишу для начала вывода. После окончания вывода нажмите любую клавишу и запустятся садовники.\n");
+                Console.ReadKey();
+                PrintMatrixMultiplicationAsync(resultY); // вывод
+                Console.ReadKey();
+            }
+
+            GardenPlan.Wood(); //созд. дерево
+            //два потока запускают двух садовников одновременно.
             var task1 = Task.Factory.StartNew(() =>
             {
                 var gardener1 = new Gardener1();
@@ -24,33 +46,37 @@ namespace Garden
                 var gardener2 = new Gardener2();
                 gardener2.Track();
             });
-            Console.ReadKey();
+            task1.Wait(); // ждем завершения первого
+            task2.Wait(); // второго
 
-            lock (locker)
+            Console.WriteLine("\nПлан отработанного сада");
+            GardenPlan.PrintGargen();
+
+            if (str != "Y") // если ранее не ждали то вот.
             {
-                Console.WriteLine("\nПлан отработанного сада");
-                GardenPlan.PrintGargen();
-                Matr();
+                Console.WriteLine("Матрицы всё еще умножаются. Подождите завершения.");
+                ulong[,] result = await task; // дожидаемся завершения умножения и приводим Task<ulong[,]> к ulong[,]
+                Console.WriteLine("Матрицы умножены. Нажмите любую клавишу для начала вывода.\n");
+                Console.ReadKey();
+                PrintMatrixMultiplicationAsync(result);
             }
+
             Console.ReadKey();
         }
 
-        static async void Matr() 
+        static async Task<ulong[,]> PrintMatrixAsync(string name) 
         {
-            Console.WriteLine("MATRIX");
+            return await Task.Run(() => Matrix.GetMatrixFromConsole(name));
+        }
 
-            var a = Matrix.Matrix.GetMatrixFromConsole("A");
-            var b = Matrix.Matrix.GetMatrixFromConsole("B");
+        static async ValueTask<ulong[,]> MatrixMultiplicationAsync(ulong[,] a, ulong[,] b)
+        {
+            return await Task.Run(() => Matrix.MatrixMultiplication(a, b));
+        }
 
-            Console.WriteLine("\nMatrix A:");
-            await Task.Run(() => Matrix.Matrix.PrintMatrix(a));//вывод матрицы А
-
-            Console.WriteLine("\nMatrix B:");
-            await Task.Run(() => Matrix.Matrix.PrintMatrix(b)); //вывод матрицы В
-
-            var result = Matrix.Matrix.MatrixMultiplication(a, b);
-            Console.WriteLine("\nMultiplication Matrix:");
-            await Task.Run(() => Matrix.Matrix.PrintMatrixResult(result));
+        static async void PrintMatrixMultiplicationAsync(ulong[,] result)
+        {
+            await Task.Run(() => Matrix.PrintMatrixResult(result));
         }
 
     }
