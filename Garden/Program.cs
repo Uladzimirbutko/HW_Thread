@@ -6,17 +6,15 @@ namespace Garden
 {
     class Program
     {
-        static readonly object locker = new object();
-
         static async Task Main(string[] args)
         {
 
             var a =  await PrintMatrixAsync("A"); // ждем
 
             var b =  await PrintMatrixAsync("B");//ждем
-
-            Console.WriteLine("Перемножение матрицы может занять некоторое время. Рекомендуется пока посмотреть на работу садовников.");
-            Console.WriteLine($"Нажмите \"Y\", если хотите сразу посмотреть результат уможения матрицы или любую клавишу, что бы посмотреть сначала работу садовников");
+            //
+            Console.WriteLine("Matrix multiplication can take some time. It is recommended to take a look at the gardeners' work for now.");
+            Console.WriteLine($"Press \"Y \" if you want to immediately see the result of the matrix reduction or any key to see the gardeners work first.");
 
             var str = Console.ReadLine().ToUpper();
 
@@ -24,9 +22,9 @@ namespace Garden
 
             if (str == "Y")
             {
-                Console.WriteLine("Матрицы умножаются. Подождите завершения.");
+                Console.WriteLine("Matrices are multiplied. Wait for completion.");
                 ulong[,] resultY = await task; //ждем завершения 
-                Console.WriteLine("Матрицы умножены. Нажмите любую клавишу для начала вывода. После окончания вывода нажмите любую клавишу и запустятся садовники.\n");
+                Console.WriteLine("The matrices are multiplied. Press any key to start output. After the end of the output, press any key and the gardeners will start.\n");
                 Console.ReadKey();
                 PrintMatrixMultiplicationAsync(resultY); // вывод
                 Console.ReadKey();
@@ -49,18 +47,17 @@ namespace Garden
             task1.Wait(); // ждем завершения первого
             task2.Wait(); // второго
 
-            Console.WriteLine("\nПлан отработанного сада");
+            Console.WriteLine("\nGarden plan.");
             GardenPlan.PrintGargen();
 
             if (str != "Y") // если ранее не ждали то вот.
             {
-                Console.WriteLine("Матрицы всё еще умножаются. Подождите завершения.");
+                Console.WriteLine("Matrices are multiplied. Wait for completion.");
                 ulong[,] result = await task; // дожидаемся завершения умножения и приводим Task<ulong[,]> к ulong[,]
-                Console.WriteLine("Матрицы умножены. Нажмите любую клавишу для начала вывода.\n");
+                Console.WriteLine("The matrices are multiplied. Press any key to start output.\n");
                 Console.ReadKey();
                 PrintMatrixMultiplicationAsync(result);
             }
-
             Console.ReadKey();
         }
 

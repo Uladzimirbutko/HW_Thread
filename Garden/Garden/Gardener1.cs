@@ -13,7 +13,7 @@ namespace Garden
                     if (garden[i,j] == 0)
                     {
                         garden[i, j] = 1;
-                        Console.WriteLine($"T1 - {garden[i, j]}. pos - {i},{j} ");
+                        Console.WriteLine($"T1 - {garden[i, j]}. position - {i},{j} ");
                     }
                     else if (garden[i,j] == 3)
                     {
